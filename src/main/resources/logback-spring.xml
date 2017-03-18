@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!--<include resource="org/springframework/boot/logging/logback/base.xml"/>-->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/spring.log}"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] [%class:%line] - %m %n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILEOUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${LOG_FILE}.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] [%class:%line] - %m %n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logging.path}/${logging.filename}.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <!-- 30 days -->
+            <maxHistory>180</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <root level="WARN">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILEOUT"/>
+    </root>
+
+
+    <!-- 测试环境+开发环境. 多个使用逗号隔开. -->
+    <springProfile name="local,test,dev">
+        <logger name="com.spy" level="DEBUG"/>
+
+        <logger name="java.sql" level="INFO"/>
+        <logger name="org.springframework.web" level="WARN"/>
+        <logger name="org.springboot.sample" level="WARN"/>
+        <logger name="org.mybatis" level="INFO"/>
+        <logger name="org.apache.ibatis" level="INFO"/>
+        <logger name="druid.sql" level="DEBUG"/>
+        <logger name="org.apache.juli" level="WARN"/>
+    </springProfile>
+
+    <!-- 生产环境. -->
+    <springProfile name="prod">
+        <logger name="com.spy" level="INFO"/>
+
+        <logger name="org.springframework.web" level="WARN"/>
+        <logger name="org.springboot.sample" level="WARN"/>
+        <logger name="org.mybatis" level="WARN"/>
+        <logger name="org.apache.ibatis" level="WARN"/>
+        <logger name="druid.sql" level="WARN"/>
+    </springProfile>
+
+
+</configuration>
