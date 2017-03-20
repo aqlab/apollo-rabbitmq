@@ -1,12 +1,14 @@
 package com.spy.rabbitmq.config;
 
 import com.rabbitmq.client.Channel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.rabbit.transaction.RabbitTransactionManager;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +22,7 @@ import org.springframework.context.annotation.Scope;
  */
 
 @Configuration
+@Slf4j
 public class RabbitmqConfig {
     public static final String EXCHANGE = "spy-exchange";
     public static final String ROUTINGKEY = "";
@@ -32,15 +35,26 @@ public class RabbitmqConfig {
         connectionFactory.setUsername("spy");
         connectionFactory.setPassword("shipengyan");
         connectionFactory.setVirtualHost("/");
-        connectionFactory.setPublisherConfirms(true); //必须要设置
+//        connectionFactory.setPublisherConfirms(true); //必须要设置
         return connectionFactory;
     }
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public RabbitTemplate rabbitTemplate() {
-        return new RabbitTemplate(connectionFactory());
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
+        rabbitTemplate.setChannelTransacted(true); // 事务模式,必须在Listener中也要启用
+
+        //
+        return rabbitTemplate;
     }
+
+    @Bean
+    public RabbitTransactionManager rabbitTransactionManager() {
+        RabbitTransactionManager rabbitTransactionManager = new RabbitTransactionManager(connectionFactory());
+        return rabbitTransactionManager;
+    }
+
 
     /**
      * 针对消费者配置
@@ -75,13 +89,18 @@ public class RabbitmqConfig {
         container.setExposeListenerChannel(true);
         container.setMaxConcurrentConsumers(1);
         container.setConcurrentConsumers(1);
+
+        //这个与confirmSelect模式只能选择一种
+//        container.setChannelTransacted(true);
+//        container.setTransactionManager(rabbitTransactionManager());
+
         container.setAcknowledgeMode(AcknowledgeMode.MANUAL); //设置确认模式手工确认
         container.setMessageListener(new ChannelAwareMessageListener() {
 
             @Override
             public void onMessage(Message message, Channel channel) throws Exception {
                 byte[] body = message.getBody();
-                System.out.println("receive msg : " + new String(body));
+                log.debug("receive msg : {}", new String(body));
                 channel.basicAck(message.getMessageProperties().getDeliveryTag(), false); //确认消息成功消费
             }
         });
