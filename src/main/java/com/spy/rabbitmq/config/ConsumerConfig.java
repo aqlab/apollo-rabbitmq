@@ -4,7 +4,7 @@ import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.transaction.RabbitTransactionManager;
@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
 public class ConsumerConfig {
 
     @Autowired
-    private CachingConnectionFactory connectionFactory;
+    private ConnectionFactory connectionFactory;
 
     @Autowired
     private RabbitTransactionManager rabbitTransactionManager;

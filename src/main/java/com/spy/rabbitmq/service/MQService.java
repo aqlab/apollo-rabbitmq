@@ -15,5 +15,7 @@ public interface MQService {
      */
     public void sendMsg(String content);
 
+    public void sendMsg(Object object);
+
     public void sendMsgExceptionByTx(String content);
 }

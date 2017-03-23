@@ -16,5 +16,5 @@ spring:
       port: 5672
       username: spy
       password: shipengyan
-      virtual-host: /
+      virtual-host: vh-spy
 

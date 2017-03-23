@@ -1,5 +1,6 @@
 package com.spy.rabbitmq.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.spy.rabbitmq.BaseTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -23,9 +24,12 @@ public class MQServiceTest extends BaseTest {
     @Test
     public void producerTest() throws InterruptedException {
         for (int i = 0; i < 10; i++) {
-            mqService.sendMsg("hi, hello world," + i);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("userId", i);
+            jsonObject.put("name", "spy" + i);
+            jsonObject.put("time", System.currentTimeMillis());
 
-            Thread.sleep(1000 * 2);
+            mqService.sendMsg(jsonObject);
         }
     }
 

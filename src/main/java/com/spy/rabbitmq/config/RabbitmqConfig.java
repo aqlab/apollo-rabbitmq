@@ -9,6 +9,7 @@ import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.transaction.RabbitTransactionManager;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,9 +25,9 @@ import org.springframework.context.annotation.Scope;
 @Configuration
 @Slf4j
 public class RabbitmqConfig {
-    public static final String EXCHANGE = "spy-exchange";
-    public static final String ROUTINGKEY = "";
-    public static final String DEFAULT_QUEUE = "spy-queue";
+    public static final String EXCHANGE = "ex-spy-test";
+    public static final String ROUTINGKEY = "normal";
+    public static final String DEFAULT_QUEUE = "qu-spy-default";
 
     @Bean
     public ConnectionFactory connectionFactory() {
@@ -34,7 +35,7 @@ public class RabbitmqConfig {
         connectionFactory.setAddresses("docker1.cd121.cc:5672");
         connectionFactory.setUsername("spy");
         connectionFactory.setPassword("shipengyan");
-        connectionFactory.setVirtualHost("/");
+        connectionFactory.setVirtualHost("vh-spy");
 //        connectionFactory.setPublisherConfirms(true); //必须要设置
         return connectionFactory;
     }
@@ -83,6 +84,11 @@ public class RabbitmqConfig {
     }
 
     @Bean
+    public MessageConverter jsonMessageConverter() {
+        return new FastJsonMessageConverter();
+    }
+
+    @Bean
     public SimpleMessageListenerContainer messageContainer() {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory());
         container.setQueues(queue());
@@ -95,6 +101,9 @@ public class RabbitmqConfig {
 //        container.setTransactionManager(rabbitTransactionManager());
 
         container.setAcknowledgeMode(AcknowledgeMode.MANUAL); //设置确认模式手工确认
+
+        container.setMessageConverter(jsonMessageConverter()); //json
+
         container.setMessageListener(new ChannelAwareMessageListener() {
 
             @Override
