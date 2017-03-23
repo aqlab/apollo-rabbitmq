@@ -8,6 +8,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.transaction.RabbitTransactionManager;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,13 +28,30 @@ public class RabbitmqConfig {
     public static final String ROUTINGKEY = "normal";
     public static final String DEFAULT_QUEUE = "qu-spy-default";
 
+    @Value("${spring.rabbitmq.host}")
+    private String host;
+
+    @Value("${spring.rabbitmq.port}")
+    private Integer port;
+
+    @Value("${spring.rabbitmq.username}")
+    private String userName;
+
+    @Value("${spring.rabbitmq.password}")
+    private String password;
+
+    @Value("${spring.rabbitmq.virtual-host}")
+    private String vhost;
+
     @Bean
     public ConnectionFactory connectionFactory() {
         CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
-        connectionFactory.setAddresses("docker1.cd121.cc:5672");
-        connectionFactory.setUsername("spy");
-        connectionFactory.setPassword("shipengyan");
-        connectionFactory.setVirtualHost("vh-spy");
+//        connectionFactory.setAddresses("docker1.cd121.cc:5672");
+        connectionFactory.setHost(host);
+        connectionFactory.setPort(port);
+        connectionFactory.setUsername(userName);
+        connectionFactory.setPassword(password);
+        connectionFactory.setVirtualHost(vhost);
         connectionFactory.setPublisherConfirms(true); //必须要设置
 
 

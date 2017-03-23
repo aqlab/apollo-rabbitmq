@@ -49,7 +49,7 @@ public class FastJsonMessageConverter extends AbstractMessageConverter {
         try {
             json = new String(message.getBody(), defaultCharset);
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            log.error("unsupported encoding exception", e);
         }
         return JSON.parseObject(json);
     }
