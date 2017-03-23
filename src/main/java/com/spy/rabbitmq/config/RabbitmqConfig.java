@@ -1,13 +1,11 @@
 package com.spy.rabbitmq.config;
 
-import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.transaction.RabbitTransactionManager;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -36,7 +34,9 @@ public class RabbitmqConfig {
         connectionFactory.setUsername("spy");
         connectionFactory.setPassword("shipengyan");
         connectionFactory.setVirtualHost("vh-spy");
-//        connectionFactory.setPublisherConfirms(true); //必须要设置
+        connectionFactory.setPublisherConfirms(true); //必须要设置
+
+
         return connectionFactory;
     }
 
@@ -44,13 +44,13 @@ public class RabbitmqConfig {
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public RabbitTemplate rabbitTemplate() {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
-        rabbitTemplate.setChannelTransacted(true); // 事务模式,必须在Listener中也要启用
+        //rabbitTemplate.setChannelTransacted(true); // 事务模式,必须在Listener中也要启用
 
         //
         return rabbitTemplate;
     }
 
-    @Bean
+    //    @Bean
     public RabbitTransactionManager rabbitTransactionManager() {
         RabbitTransactionManager rabbitTransactionManager = new RabbitTransactionManager(connectionFactory());
         return rabbitTransactionManager;
@@ -88,32 +88,45 @@ public class RabbitmqConfig {
         return new FastJsonMessageConverter();
     }
 
-    @Bean
-    public SimpleMessageListenerContainer messageContainer() {
-        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory());
-        container.setQueues(queue());
-        container.setExposeListenerChannel(true);
-        container.setMaxConcurrentConsumers(1);
-        container.setConcurrentConsumers(1);
 
-        //这个与confirmSelect模式只能选择一种
-//        container.setChannelTransacted(true);
-//        container.setTransactionManager(rabbitTransactionManager());
+    @Bean(name = "simpleRabbitListenerContainerFactory")
+    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory() {
+        SimpleRabbitListenerContainerFactory containerFactory = new SimpleRabbitListenerContainerFactory();
+        containerFactory.setConnectionFactory(connectionFactory());
 
-        container.setAcknowledgeMode(AcknowledgeMode.MANUAL); //设置确认模式手工确认
+        containerFactory.setMaxConcurrentConsumers(1);
+        containerFactory.setConcurrentConsumers(1);
 
-        container.setMessageConverter(jsonMessageConverter()); //json
+        containerFactory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+        containerFactory.setMessageConverter(jsonMessageConverter());
 
-        container.setMessageListener(new ChannelAwareMessageListener() {
-
-            @Override
-            public void onMessage(Message message, Channel channel) throws Exception {
-                byte[] body = message.getBody();
-                log.debug("receive msg : {}", new String(body));
-                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false); //确认消息成功消费
-            }
-        });
-        return container;
+        return containerFactory;
     }
+//   //这个太简单了
+//    @Bean
+//    public SimpleMessageListenerContainer messageContainer() {
+//        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory());
+//        container.setQueues(queue());
+//        container.setExposeListenerChannel(true);
+//        container.setMaxConcurrentConsumers(1);
+//        container.setConcurrentConsumers(1);
+//
+//        //这个与confirmSelect模式只能选择一种
+////        container.setChannelTransacted(true);
+////        container.setTransactionManager(rabbitTransactionManager());
+//
+//        container.setAcknowledgeMode(AcknowledgeMode.MANUAL); //设置确认模式手工确认
+//        container.setMessageConverter(jsonMessageConverter()); //json
+//
+//        container.setMessageListener(new ChannelAwareMessageListener() {
+//            @Override
+//            public void onMessage(Message message, Channel channel) throws Exception {
+//                byte[] body = message.getBody();
+//                log.debug("receive msg : {}", new String(body));
+//                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false); //确认消息成功消费
+//            }
+//        });
+//        return container;
+//    }
 
 }

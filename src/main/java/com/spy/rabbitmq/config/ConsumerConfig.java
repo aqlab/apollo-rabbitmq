@@ -10,7 +10,6 @@ import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.transaction.RabbitTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * 模块名
@@ -18,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
  * @author shi.pengyan
  * @date 2017-03-20 14:47
  */
-@Configuration
+//@Configuration
 @Slf4j
 public class ConsumerConfig {
 
