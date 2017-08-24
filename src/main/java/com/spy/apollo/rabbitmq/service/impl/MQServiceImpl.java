@@ -1,7 +1,7 @@
-package com.spy.rabbitmq.service.impl;
+package com.spy.apollo.rabbitmq.service.impl;
 
-import com.spy.rabbitmq.config.RabbitmqConfig;
-import com.spy.rabbitmq.service.MQService;
+import com.spy.apollo.rabbitmq.config.RabbitmqConfig;
+import com.spy.apollo.rabbitmq.service.MQService;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.support.CorrelationData;
 import org.springframework.amqp.support.converter.MessageConverter;

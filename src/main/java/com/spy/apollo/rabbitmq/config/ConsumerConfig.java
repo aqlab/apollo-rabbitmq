@@ -1,4 +1,4 @@
-package com.spy.rabbitmq.config;
+package com.spy.apollo.rabbitmq.config;
 
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;

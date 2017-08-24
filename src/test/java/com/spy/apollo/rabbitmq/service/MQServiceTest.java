@@ -1,7 +1,7 @@
-package com.spy.rabbitmq.service;
+package com.spy.apollo.rabbitmq.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.spy.rabbitmq.BaseTest;
+import com.spy.apollo.rabbitmq.BaseTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

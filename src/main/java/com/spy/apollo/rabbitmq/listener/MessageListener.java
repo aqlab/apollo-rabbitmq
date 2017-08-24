@@ -1,7 +1,7 @@
-package com.spy.rabbitmq.listener;
+package com.spy.apollo.rabbitmq.listener;
 
 import com.rabbitmq.client.Channel;
-import com.spy.rabbitmq.config.RabbitmqConfig;
+import com.spy.apollo.rabbitmq.config.RabbitmqConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

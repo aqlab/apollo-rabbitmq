@@ -1,4 +1,4 @@
-package com.spy.rabbitmq.service;
+package com.spy.apollo.rabbitmq.service;
 
 /**
  * 模块名

@@ -1,4 +1,4 @@
-package com.spy.rabbitmq;
+package com.spy.apollo.rabbitmq;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
